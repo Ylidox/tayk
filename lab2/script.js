@@ -1,7 +1,7 @@
 let textarea = document.querySelector('#graph');
 let placeholder = document.querySelector('#placeholder');
 let canvas = document.querySelector('canvas');
-let button = document.querySelector('#generate');
+let button = document.querySelector('#button_graph');
 
 let graph = {
   options: {
@@ -52,6 +52,14 @@ let determine = (graph, alpabet) => {
     }
     graph[key][transition] = join(state);
   }
+
+  for(let key in graph){
+    for(let letter in graph[key]){
+      if(Array.isArray(graph[key][letter])){
+        graph[key][letter] = join( graph[key][letter]); 
+      }
+    }
+  }
 }
 
 let generateGraphDescription = (graph) => {
@@ -78,6 +86,21 @@ let showInfo = (graph) => {
   alert(out);
 }
 
+let checkInputGraph = () => {
+
+}
+
+let runLine = (graph, alpabet, string, begin='q0') => {
+  string = string.split('');
+  let point = begin;
+  for(let letter of string){
+    if(!alpabet.has(letter)) return [false, point];
+    point = graph[point][letter];
+    if(point === undefined) return [false, point];
+  }
+  return [true, point];
+}
+
 button.onclick = function(event){
   graph = {
     options: {
@@ -97,6 +120,22 @@ button.onclick = function(event){
 
   showInfo(graph)
 }
+
+document.querySelector('#button_string').onclick = function(event){
+  let string = document.querySelector('#string').value;
+  if(string == '') return;
+  if(Object.keys(graph) == 1) return false;
+
+  let [res, point] = runLine(graph, alpabet, string);
+  
+  let out = 'Введённую строку символов ';
+  out += res ? 'возможно' : 'невозможно';
+  out += ' разобрать автоматом\n';
+  out += `Конечное состояние: ${point}`;
+
+  alert(out);
+}
+
 // q0,1=q2
 // q0,1=q3
 // q0,2=q4
@@ -105,3 +144,21 @@ button.onclick = function(event){
 // q4,1=q3
 // q4,2=q2
 // q4,2=q5
+
+
+// q0,a=q1
+// q0,a=q2
+// q0,a=q3
+// q1,b=q2
+// q1,h=q4
+// q1,h=q5
+// q2,b=q3
+// q2,c=q2
+// q2,c=q1
+// q2,e=q5
+// q3,c=q2
+// q3,c=q6
+// q4,y=f0
+// q5,x=f0
+// q6,h=q5
+//accex

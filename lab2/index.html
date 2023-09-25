@@ -12,6 +12,14 @@
     .content>*{
       margin-bottom: 10px;
     }
+    .buttons{
+      width: calc(100%);
+      display: flex;
+      justify-content: space-between;
+    }
+    .buttons>button{
+      width: calc(50% - 5px);
+    }
   </style>
 </head>
 <body>
@@ -22,8 +30,11 @@
       cols="30" rows="10" 
       id="placeholder"
       placeholder="В случае недетерминированного автомата выводит переходы для соответствующего ему детерминированного автомата" disabled></textarea>
-    <input ="string" placeholder="Строка символов:"></input>
-    <button id="generate">Анализировать</button>
+    <input id="string" placeholder="Строка символов:"></input>
+    <div class="buttons">
+      <button id="button_graph">Анализировать граф</button>
+      <button id="button_string">Анализировать строку</button>
+    </div>
     <canvas>Недоступен канвас</canvas>
   </div>
 </body>
