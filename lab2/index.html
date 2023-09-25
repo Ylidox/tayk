@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .content{
+      display: flex;
+      flex-direction: column;
+    }
+    .content>*{
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <textarea name="graph" id="graph" cols="30" rows="10" placeholder="Граф переходов:"></textarea>
+    <textarea 
+      name="transition" 
+      cols="30" rows="10" 
+      id="placeholder"
+      placeholder="В случае недетерминированного автомата выводит переходы для соответствующего ему детерминированного автомата" disabled></textarea>
+    <input ="string" placeholder="Строка символов:"></input>
+    <button id="generate">Анализировать</button>
+    <canvas>Недоступен канвас</canvas>
+  </div>
+</body>
+<script src="script.js"></script>
+</html>
