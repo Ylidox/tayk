@@ -188,6 +188,8 @@ document.getElementById('button_graph').onclick = () => {
 document.getElementById('button_string').onclick = () => {
   if(Object.keys(graph).length == 2) return;
 
+  transitions = stack();
+  storeFeed = stack();
   let str = document.getElementById('string').value.split('');
   try{
     runLine(str);
