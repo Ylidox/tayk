@@ -21,10 +21,14 @@ const stack = () => {
   let array = () => {
     return arr;
   }
-  return {push, pop, current, array};
+  let clear = () => {
+    let out = pop();
+    while(out !== undefined) out = pop();
+  }
+  return {push, pop, current, array, clear};
 }
 
-let {push, pop, current, array} = stack();
+let {push, pop, current, array, clear} = stack();
 push(H0);
 
 let transitions = stack();
@@ -188,8 +192,12 @@ document.getElementById('button_graph').onclick = () => {
 document.getElementById('button_string').onclick = () => {
   if(Object.keys(graph).length == 2) return;
 
-  transitions = stack();
-  storeFeed = stack();
+  transitions.clear();
+  storeFeed.clear();
+  clear();
+  push(H0);
+  
+
   let str = document.getElementById('string').value.split('');
   try{
     runLine(str);
