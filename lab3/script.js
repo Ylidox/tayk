@@ -8,7 +8,7 @@ const stack = () => {
   let arr = [];
   let push = (value) => {
     if(typeof value == 'string' && value.length > 1)
-      arr = arr.concat(value.split(''));
+      arr = arr.concat(value.split('').reverse());
     else arr.push(value);
     return value;
   }
@@ -30,6 +30,7 @@ const stack = () => {
 
 let {push, pop, current, array, clear} = stack();
 push(H0);
+push('E');
 
 let transitions = stack();
 let storeFeed = stack();
@@ -95,66 +96,157 @@ let read = (str) => {
   fill();
 }
 
-let runLine = (str) => {
-  let row = [...str];
-  if(row.length == 0) throw new Error(SUCCESS);
-  let symbol = row.shift();
-  // console.log(symbol)
-  if(graph.state.storeAlphabet.has(symbol)){
-    let obj = graph[symbol][LAMDA];
-    console.log(symbol, obj)
+// let runLine = (str) => {
+//   let row = [...str];
+//   if(row.length == 0) throw new Error(SUCCESS);
+//   let symbol = row.shift();
+//   // console.log(symbol)
+//   if(graph.state.storeAlphabet.has(symbol)){
+//     let obj = graph[symbol][LAMDA];
+//     console.log(symbol, obj)
     
-    if(typeof obj === 'object'){
-      for(let state of obj){
-        console.log('state: ', state)
-        push(state);
-        transitions.push({
-          symbol,
-          transition: state,
-          action: ADD,
-        });
-        storeFeed.push([...array()]);
-        runLine(row);
-        for(let key in state) pop();
-        transitions.pop();
-        storeFeed.pop()
+//     if(typeof obj === 'object'){
+//       for(let state of obj){
+//         console.log('state: ', state)
+//         push(state);
+//         transitions.push({
+//           symbol,
+//           transition: state,
+//           action: ADD,
+//         });
+//         storeFeed.push([...array()]);
+//         runLine(row);
+//         for(let key in state) pop();
+//         transitions.pop();
+//         storeFeed.pop()
+//       }
+//     }else{
+//       console.log('state: ', state)
+//       transitions.push({
+//         symbol,
+//         transition: obj,
+//         action: ADD,
+//       });
+//       push(obj);
+//       storeFeed.push([...array()]);
+//       runLine(row);
+//       for(let key in state) pop();
+//       transitions.pop();
+//       storeFeed.pop();
+//     }
+//   }else if(graph.state.inputAlphabet.has(symbol)){
+//     let curr = current();
+//     console.log(symbol, curr);
+
+//     if(curr == symbol){
+//       transitions.push({
+//         symbol,
+//         transition: curr,
+//         action: REMOVE,
+//       });
+//       pop();
+//       storeFeed.push([...array()]);
+//       runLine(row);
+//       push(curr);
+//       transitions.pop();
+//       storeFeed.pop();
+//     }else if(graph.state.storeAlphabet.has(curr)){
+     
+//       let obj = graph[curr][LAMDA];
+
+//       console.log('*****', obj);
+//       if(typeof obj == 'string'){
+//         if(symbol == obj[0]){
+//           console.log(symbol);
+//           pop();
+//           push(obj);
+//           pop();
+//           console.log([...array()]);
+
+//           transitions.push({
+//             symbol,
+//             transition: obj,
+//             action: ADD,
+//           });
+//           storeFeed.push([...array()]);
+//           runLine(row);
+//           for(let key  = 1; key < obj.length; key++) pop();
+//           push(curr);
+//           transitions.pop();
+//           storeFeed.pop();
+//         }
+//         let trans = pop();
+        
+//         push(obj);
+//         transitions.push({
+//           symbol,
+//           transition: obj,
+//           action: ADD,
+//         });
+//         storeFeed.push([...array()]);
+//         runLine(row);
+//         for(let key in obj) pop();
+//         transitions.pop();
+//         storeFeed.pop();
+//       } else
+//       for(let state of obj){
+        
+//         // push(state);
+//         // transitions.push({
+//         //   symbol,
+//         //   transition: state,
+//         //   action: ADD,
+//         // });
+//         // storeFeed.push([...array()]);
+//       }
+
+//     }else if(curr == H0){
+//       throw new Error(`Стек пуст, однако требуестя символ:${symbol}`);
+//     }else{
+//       row.unshift(symbol);
+//       return;
+//     }
+//   }else throw new Error(`Символ не содержится в алфавите: ${symbol}`);
+// }
+
+let runLine = (str) => {
+  let curr = current();
+  if(curr !== H0){
+    console.log(curr, '****')
+    if(graph.state.storeAlphabet.has(curr)){
+      let obj = graph[curr][LAMDA];
+      if(typeof obj == 'object'){
+        for(let trans of obj){
+          pop();
+          push(trans);
+          runLine(str);
+          for(let key of trans) pop();
+          push(curr);
+        }
+      }else{
+        pop();
+        push(obj);
+        runLine(str);
+        for(let key of obj) pop();
+        push(curr);
       }
-    }else{
-      console.log('state: ', state)
-      transitions.push({
-        symbol,
-        transition: obj,
-        action: ADD,
-      });
-      push(obj);
-      storeFeed.push([...array()]);
-      runLine(row);
-      for(let key in state) pop();
-      transitions.pop();
-      storeFeed.pop();
+    }else if(graph.state.inputAlphabet.has(curr)){
+      let symbol = str.shift();
+      if(curr == symbol){
+        pop();
+        runLine(str);
+        push(curr);
+      }else if(graph.state.storeAlphabet.has(symbol)){
+        console.log(symbol, '****')
+      }else if(str.length == 0){
+        throw new Error(SUCCESS);
+      }
+      else{
+        str.unshift(symbol);
+        return;
+      }
     }
-  }else if(graph.state.inputAlphabet.has(symbol)){
-    let curr = current();
-    console.log(symbol, curr)
-    if(curr == symbol){
-      transitions.push({
-        symbol,
-        transition: curr,
-        action: REMOVE,
-      });
-      pop();
-      storeFeed.push([...array()]);
-      runLine(row);
-      push(curr);
-      transitions.pop();
-      storeFeed.pop();
-    }else if(curr == H0){
-      throw new Error(`Стек пуст, однако требуестя символ:${symbol}`);
-    }else{
-      row.unshift(symbol);
-      return;
-    }
-  }else throw new Error(`Символ не содержится в алфавите: ${symbol}`);
+  }
 }
 
 let showInfo = (error) => {
@@ -196,6 +288,7 @@ document.getElementById('button_string').onclick = () => {
   storeFeed.clear();
   clear();
   push(H0);
+  push('E');
   
 
   let str = document.getElementById('string').value.split('');
