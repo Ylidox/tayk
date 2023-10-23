@@ -1,0 +1,29 @@
+// int, float, bool
+
+*E*>?|*T*|*IF*|*FOR*|*A*;*E*|?*E*
+*T*>int&*VNI*|bool&*VNB*|float&*VNF*
+*VNI*>*ivname*?=?*A*?;*E*
+*VNB*>*ivname*?=?*A*?;*E*
+*VNF*>*ivname*?=?*A*?;*E*
+*A*>*vname*?=?*A*|*vname*++|*vname*--|++*vname*|--*vname*|*vname*?*A*|*number*?*A*|(?*A*?)?*A*|+?*A*|-?*A*|*?*A*|/?*A*|>?*A*|<?*A*|>=?*A*|<=?*A*|==?*A*|?
+*V*>*vname*|*number*
+*IF*>if?(?*A*?)?{?*E*?}*ELSE*
+*ELSE*>else?{?*E*?}*E*|else?*IF*|*E*
+*FOR*>for?(?*T*?*A*?;?*A*?)?{?*E*?}*E*
+
+
+void&*FNV*
+*FNV*>*ifname*?(?int t, bool b?)?{?*E*?}*E*
+*E*>?|*T*|?*E*|*I*|*FOR*|*A*
+*T*>int&*VNI*|bool&*VNB*|float&*VNF*|int&*FNI*|bool&*FNB*|void&*FNV*
+*A*>*V*|*A*?+?*A*|*A*?-?*A*|*A*?/?*A*|*A*?*?*A*|(?*A*?)|*vname*++|++*vname*|*vname*--|--*vname*
+
+*A*>*vname*|*fname*|*number*|*string*|*bool*|*A*?+?*A*|*A*?-?*A*|*A*?/?*A*|*A*?*?*A*|(?*A*?)|*vname*++|++*vname*|*vname*--|--*vname*
+
+*FOR*>for?(?*T*?;*A*;?)?
+
+? - может быть сколько угодно пробелов, переносов строк, знаков табуляции, а может не быть ничего
+& - должен быть хотя бы один знак пробел, перенос строк или табуляция
+VNI - variable name integer
+ivname - инициализация переменной
+vname - использование переменной
