@@ -30,6 +30,7 @@ let createGraph = () => {
     state: {
       storeAlphabet: new Set(),
       variables: new Set(),
+      functions: {},
     }
   }
 }
@@ -102,47 +103,6 @@ let takeNumber = (str) => takeWord(str, /^\.[0-9]+|^[0-9]+\.[0-9]+|^[0-9]+\.|^[0
 let isTemplate = (str) => {
   return /^\*[A-z0-9]+\*/.test(str);
 }
-
-// let runLine = (str) => {
-//   let curr = current();
-//   if(curr !== H0){
-//     console.log(curr, '****');
-//     let hasInStoreAlpabet = graph.state.storeAlphabet.has(curr); 
-//     if(hasInStoreAlpabet){
-//       let obj = graph[curr][LAMDA];
-//       if(typeof obj == 'object'){
-//         for(let trans of obj){
-//           pop();
-//           push(trans);
-//           runLine(str);
-//           for(let key of trans) pop();
-//           push(curr);
-//         }
-//       }else{
-//         pop();
-//         push(obj);
-//         runLine(str);
-//         for(let key of obj) pop();
-//         push(curr);
-//       }
-//     }else if(!hasInStoreAlpabet){
-//       let symbol = str.shift();
-//       if(curr == symbol){
-//         pop();
-//         runLine(str);
-//         push(curr);
-//       }else if(graph.state.storeAlphabet.has(symbol)){
-//         console.log(symbol, '****')
-//       }else if(str.length == 0){
-//         throw new Error(SUCCESS);
-//       }
-//       else{
-//         str.unshift(symbol);
-//         return;
-//       }
-//     }
-//   }
-// }
 
 let runLine = (str) => {  
   let curr = current();
@@ -235,14 +195,24 @@ let runLine = (str) => {
           push(curr);
           break;
         case '*number*':
-          
-
           [word, string, result] = takeNumber(str);
           console.log(curr, word, string)
           if(!result) return;
           pop();
           runLine(string);
           push(curr);
+          break;
+        case '*ifname*':
+          [word, string, result] = takeSubstring(str);
+          console.log(curr, word);
+
+          if(!result) return;
+
+          graph.state.functions[word] = {}
+          pop();
+          runLine(string);          
+          push(curr);
+          delete graph.state.functions[word];
           break;
       }
     }
