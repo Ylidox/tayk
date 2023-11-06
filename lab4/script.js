@@ -30,7 +30,7 @@ let createGraph = () => {
     state: {
       storeAlphabet: new Set(),
       variables: new Set(),
-      functions: {},
+      functions: new Set(),
     }
   }
 }
@@ -208,11 +208,22 @@ let runLine = (str) => {
 
           if(!result) return;
 
-          graph.state.functions[word] = {}
+          graph.state.functions.add(word);
           pop();
           runLine(string);          
           push(curr);
-          delete graph.state.functions[word];
+          graph.state.functions.delete(word);
+          break;
+        case '*fname*':
+          [word, string, result] = takeSubstring(str);
+          console.log(curr, word)
+
+          if(!result) return;
+          if(!graph.state.functions.has(word)) return;
+
+          pop();
+          runLine(string);
+          push(curr);
           break;
       }
     }

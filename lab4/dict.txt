@@ -1,6 +1,39 @@
-// int, float, bool
 
-*E*>?|*T*|*IF*|*FOR*|*IFUNC*|*A*;*E*|?*E*
+*E*>?|*T*|*IF*|*FOR*|*IFUNC*|*A*;?*E*|?*E*
+*FE*>?|*T*|*IF*|*FOR*|*A*;?*E*|?*E*
+*TYPE*>int|float|bool|char
+*FTYPE*>void|*TYPE*
+*T*>*TYPE*&*VN*
+*VN*>*ivname*?=?*A*?;?*E*|*ivname*?,?*VN*?;*E*|*ivname*?;*E*
+*A*>return&*A*|*CALL*|*vname*?=?*A*|*vname*++|*vname*--|++*vname*|--*vname*|*V*?*A*|(?*A*?)?*A*|%?*A*|+?*A*|-?*A*|*?*A*|/?*A*|+=?*A*|-=?*A*|*=?*A*|/=?*A*|%=?*A*|>?*A*|<?*A*|>=?*A*|<=?*A*|==?*A*|?
+*V*>*vname*|*number*
+*IF*>if?(?*A*?)?{?*E*?}?*ELSE*
+*ELSE*>else?{?*E*?}*E*|else?*IF*|*E**A*?
+*FOR*>for?(?*T*?*A*?;?*A*?)?{?*E*?}?*E*
+*IFUNC*>*FTYPE*&*ifname*?(?*FT*?)?{?*FE*?}?*E*
+*FT*>*TYPE*&*ivname*?*FT*|,?*FT*|?
+*CALL*>*fname*?(?*CFA*?)?*A*
+*CFA*>?|,?*CFA*|*A*?*CFA*
+
+
+
+
+? - может быть сколько угодно пробелов, переносов строк, знаков табуляции, а может не быть ничего
+& - должен быть хотя бы один знак пробела или переноа строк, или табуляция
+VN - variable name
+ivname - инициализация переменной
+vname - использование переменной
+ifname - инициализация названия функции
+fname - использование функции
+IFUNC - init function
+FT - принимаемые function type
+FTYPE - возвращаемые типы
+FE - программа внутри функции(невозможно объявить другую функцию внутри функции)
+//FA - function action - действия внутри функции(от A отличается наличием return)
+CALL- вызов функции
+CFA - call function argument 
+
+*E*>?|*T*|*IF*|*FOR*|*IFUNC*|*A*;?*E*|?*E*
 *T*>int&*VNI*|bool&*VNB*|float&*VNF*
 *VNI*>*ivname*?=?*A*?;*E*
 *VNB*>*ivname*?=?*A*?;*E*
@@ -12,14 +45,3 @@
 *FOR*>for?(?*T*?*A*?;?*A*?)?{?*E*?}?*E*
 *IFUNC*>int&*ifname*?(?*FT*?)?{?*E*?}?*E*
 *FT*>int&*ivname*?*FT*|float&*ivname*?*FT*|bool&*ivname*?*FT*|,?*FT*|?
-
-
-
-
-? - может быть сколько угодно пробелов, переносов строк, знаков табуляции, а может не быть ничего
-& - должен быть хотя бы один знак пробел, перенос строк или табуляция
-VNI - variable name integer
-ivname - инициализация переменной
-vname - использование переменной
-IFUNC - init function
-FT - function type
