@@ -1,5 +1,5 @@
 
-*E*>?|*T*|*IF*|*FOR*|*IFUNC*|*A*;?*E*|?*E*
+*E*>?|?*T*|?*IF*|?*FOR*|?*IFUNC*|?*A*;?*E*
 *FE*>?|*T*|*IF*|*FOR*|*A*;?*E*|?*E*
 *TYPE*>int|float|bool|char
 *FTYPE*>void|*TYPE*
