@@ -35,6 +35,26 @@ let createGraph = () => {
   }
 }
 
+let createErrorPoint = () => {
+  return {
+    err: '',
+    depth: 0,
+    maxdepth: 0,
+    incrementDepth(){
+      this.depth++;
+    },
+    decrementDepth(){
+      this.depth--;
+    },
+    saveMaxDepth(err){
+      if(this.maxdepth < this.depth) {
+        this.maxdepth = this.depth;
+        this.err = err;
+      }
+    }
+  }
+}
+
 let graph = createGraph();
 
 let pushExprToStack = (expr) => {
@@ -104,7 +124,12 @@ let isTemplate = (str) => {
   return /^\*[A-z0-9]+\*/.test(str);
 }
 
-let runLine = (str) => {  
+
+let errorPoint = craeteErrorPoint();
+
+let errorList = [];
+
+let runLine = (str, errorPoint) => {  
   let curr = current();
   // if(curr == H0) throw Error(SUCCESS);
   if(str === '') throw new Error(SUCCESS);
@@ -117,7 +142,7 @@ let runLine = (str) => {
         console.log(curr, transitions, transition)
         pop();
         let trans = pushExprToStack(transition);
-        runLine(str);
+        runLine(str, errorPoint);
         for(let key of trans) pop();
         push(curr);
       }
@@ -125,7 +150,7 @@ let runLine = (str) => {
       console.log(curr, transitions)
       pop();
       let trans = pushExprToStack(transitions);
-      runLine(str);
+      runLine(str, errorPoint);
       for(let key of trans) pop();
       push(curr);
     }
@@ -139,9 +164,10 @@ let runLine = (str) => {
           str = word + string;
           return;
         }
+        
 
         pop();
-        runLine(string);
+        runLine(str, errorPoint);
         push(curr);
         str = word + string;
         break;
@@ -150,7 +176,7 @@ let runLine = (str) => {
         console.log(curr, word)
         
         pop();
-        runLine(string);
+        runLine(str, errorPoint);
         push(curr);
         str = word + string;
         break;
@@ -161,7 +187,7 @@ let runLine = (str) => {
 
           if(word == curr){
             pop();
-            runLine(string);
+            runLine(str, errorPoint);
             push()
           }
           str = word + string;
@@ -179,7 +205,7 @@ let runLine = (str) => {
 
           graph.state.variables.add(word);
           pop();
-          runLine(string);          
+          runLine(str, errorPoint);         
           push(curr);
           graph.state.variables.delete(word);
           break;
@@ -191,7 +217,7 @@ let runLine = (str) => {
           if(!graph.state.variables.has(word)) return;
 
           pop();
-          runLine(string);
+          runLine(str, errorPoint);
           push(curr);
           break;
         case '*number*':
@@ -199,7 +225,7 @@ let runLine = (str) => {
           console.log(curr, word, string)
           if(!result) return;
           pop();
-          runLine(string);
+          runLine(str, errorPoint);
           push(curr);
           break;
         case '*ifname*':
@@ -210,7 +236,7 @@ let runLine = (str) => {
 
           graph.state.functions.add(word);
           pop();
-          runLine(string);          
+          runLine(str, errorPoint);        
           push(curr);
           graph.state.functions.delete(word);
           break;
@@ -222,7 +248,7 @@ let runLine = (str) => {
           if(!graph.state.functions.has(word)) return;
 
           pop();
-          runLine(string);
+          runLine(str, errorPoint);
           push(curr);
           break;
       }
@@ -242,11 +268,11 @@ document.getElementById('button_string').onclick = () => {
   clear();
   push(H0);
   push('*E*');
-  
+  errorPoint = craeteErrorPoint();
 
   let str = document.getElementById('string').value;
   try{
-    runLine(str);
+    runLine(str, errorPoint);
     throw new Error(`Строка не может быть обработана автоматом`);
   }catch(e){
     console.log(e);
