@@ -51,7 +51,7 @@ let createErrorPoint = () => {
     saveMaxDepth(err){
       if(this.maxdepth < this.depth) {
         this.maxdepth = this.depth;
-        this.preverr = err.slice(0, 5);
+        this.preverr = this.err;
         this.err = err.slice(0, 5);
         this.program = err;
       }
