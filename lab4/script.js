@@ -37,7 +37,9 @@ let createGraph = () => {
 
 let createErrorPoint = () => {
   return {
+    preverr: '',
     err: '',
+    program: '',
     depth: 0,
     maxdepth: 0,
     incrementDepth(){
@@ -49,9 +51,14 @@ let createErrorPoint = () => {
     saveMaxDepth(err){
       if(this.maxdepth < this.depth) {
         this.maxdepth = this.depth;
-        this.err = err;
+        this.preverr = err.slice(0, 5);
+        this.err = err.slice(0, 5);
+        this.program = err;
       }
-    }
+    },
+    saveProgram(str){
+      this.program = str;
+    },
   }
 }
 
@@ -124,15 +131,28 @@ let isTemplate = (str) => {
   return /^\*[A-z0-9]+\*/.test(str);
 }
 
+let clearLineToSeparator = (str) => {
+  let regex = /^[^;}]+/;
+  let word = str.match(regex);
+  if(word !== null) word = word[0];
+  strings.push(str);
+  return [word, str.replace(regex, '').slice(1)];
+}
 
-let errorPoint = craeteErrorPoint();
+
+let errorPoint = createErrorPoint();
 
 let errorList = [];
+let strings = [];
 
-let runLine = (str, errorPoint) => {  
+let runLine = (str) => {  
   let curr = current();
+
+  errorPoint.incrementDepth();
+  errorPoint.saveMaxDepth(str);
+  
   // if(curr == H0) throw Error(SUCCESS);
-  if(str === '') throw new Error(SUCCESS);
+  if(str === '' && curr == H0) throw new Error(SUCCESS);
 
   let hasInStoreAlpabet = graph.state.storeAlphabet.has(curr); 
   if(hasInStoreAlpabet){
@@ -142,17 +162,19 @@ let runLine = (str, errorPoint) => {
         console.log(curr, transitions, transition)
         pop();
         let trans = pushExprToStack(transition);
-        runLine(str, errorPoint);
+        runLine(str);
         for(let key of trans) pop();
         push(curr);
+        errorPoint.decrementDepth();
       }
     }else{
       console.log(curr, transitions)
       pop();
       let trans = pushExprToStack(transitions);
-      runLine(str, errorPoint);
+      runLine(str);
       for(let key of trans) pop();
       push(curr);
+      errorPoint.decrementDepth();
     }
   }else{
     let word, string, result;
@@ -164,21 +186,22 @@ let runLine = (str, errorPoint) => {
           str = word + string;
           return;
         }
-        
 
         pop();
-        runLine(str, errorPoint);
+        runLine(string);
         push(curr);
         str = word + string;
+        errorPoint.decrementDepth();
         break;
       case '?':
         [word, string, result] = takeWordFofSignQuestion(str);
         console.log(curr, word)
         
         pop();
-        runLine(str, errorPoint);
+        runLine(string);
         push(curr);
         str = word + string;
+        errorPoint.decrementDepth();
         break;
       default:
         if(!isTemplate(curr)){
@@ -187,8 +210,9 @@ let runLine = (str, errorPoint) => {
 
           if(word == curr){
             pop();
-            runLine(str, errorPoint);
+            runLine(string);
             push()
+            errorPoint.decrementDepth();
           }
           str = word + string;
         }
@@ -205,9 +229,10 @@ let runLine = (str, errorPoint) => {
 
           graph.state.variables.add(word);
           pop();
-          runLine(str, errorPoint);         
+          runLine(string);          
           push(curr);
-          graph.state.variables.delete(word);
+          // graph.state.variables.delete(word);
+          errorPoint.decrementDepth();
           break;
         case '*vname*':
           [word, string, result] = takeSubstring(str);
@@ -217,16 +242,18 @@ let runLine = (str, errorPoint) => {
           if(!graph.state.variables.has(word)) return;
 
           pop();
-          runLine(str, errorPoint);
+          runLine(string);
           push(curr);
+          errorPoint.decrementDepth();
           break;
         case '*number*':
           [word, string, result] = takeNumber(str);
           console.log(curr, word, string)
           if(!result) return;
           pop();
-          runLine(str, errorPoint);
+          runLine(string);
           push(curr);
+          errorPoint.decrementDepth();
           break;
         case '*ifname*':
           [word, string, result] = takeSubstring(str);
@@ -236,9 +263,10 @@ let runLine = (str, errorPoint) => {
 
           graph.state.functions.add(word);
           pop();
-          runLine(str, errorPoint);        
+          runLine(string);          
           push(curr);
-          graph.state.functions.delete(word);
+          // graph.state.functions.delete(word);
+          errorPoint.decrementDepth();
           break;
         case '*fname*':
           [word, string, result] = takeSubstring(str);
@@ -248,8 +276,9 @@ let runLine = (str, errorPoint) => {
           if(!graph.state.functions.has(word)) return;
 
           pop();
-          runLine(str, errorPoint);
+          runLine(string);
           push(curr);
+          errorPoint.decrementDepth();
           break;
       }
     }
@@ -268,14 +297,36 @@ document.getElementById('button_string').onclick = () => {
   clear();
   push(H0);
   push('*E*');
-  errorPoint = craeteErrorPoint();
+  
+  errorList = [];
+  errorPoint = createErrorPoint();
 
   let str = document.getElementById('string').value;
   try{
-    runLine(str, errorPoint);
+    let i = 0;
+    while(i < 60){
+      errorPoint = createErrorPoint();
+
+      runLine(str);
+      if(errorPoint.err == '') break;
+      else{
+        str = errorPoint.program;
+        clear();
+        push(H0);
+        push('*E*');
+      }
+
+      if(errorList.includes(errorPoint.preverr)){
+        // errorList.push(`***1 ${str}`);
+        str = clearLineToSeparator(str)[1];
+        // errorList.push(`***2 ${str}`);
+      }else errorList.push(errorPoint.preverr);
+      i++;
+    }
+    // runLine(str);
+    console.log('str', str)
     throw new Error(`Строка не может быть обработана автоматом`);
   }catch(e){
     console.log(e);
   }
 }
-
