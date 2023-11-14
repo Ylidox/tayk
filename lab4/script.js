@@ -132,7 +132,7 @@ let isTemplate = (str) => {
 }
 
 let clearLineToSeparator = (str) => {
-  let regex = /^[^;}]+/;
+  let regex = /^[^;}\n]+/;
   let word = str.match(regex);
   if(word !== null) word = word[0];
   strings.push(str);
@@ -328,5 +328,9 @@ document.getElementById('button_string').onclick = () => {
     throw new Error(`Строка не может быть обработана автоматом`);
   }catch(e){
     console.log(e);
+  }finally{
+    let out = '';
+    errorList.forEach((item, index) => out += `${index + 1}. ${item}\n`);
+    console.log('Ошибки\n', out);
   }
 }
